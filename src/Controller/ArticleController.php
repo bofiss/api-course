@@ -12,6 +12,7 @@ namespace App\Controller;
 use App\Entity\Post;
 
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,7 +36,8 @@ class ArticleController
      */
     public function list(){
         $articles = $this->em->getRepository(Post::class)->findAll();
-        $data = $this->serializer->serialize($articles, 'json');
+        $data = $this->serializer->serialize($articles, 'json',
+            SerializationContext::create()->setGroups(array('list')));
         $response = new Response($data);
         $response->headers->set('Content-Type', 'application/json');
         return $response;
@@ -49,7 +51,8 @@ class ArticleController
     public function show(Post $article)
     {
 
-        $data = $this->serializer->serialize($article, 'json');
+        $data = $this->serializer->serialize($article, 'json',
+            SerializationContext::create()->setGroups(array('detail')));
         $response = new Response($data);
         $response->headers->set('Content-Type', 'application/json');
         return $response;
